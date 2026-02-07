@@ -1,42 +1,121 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.app {
+  position: relative;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.info-panel {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  z-index: 1000;
+  max-width: 280px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.info-panel h2 {
+  margin: 0 0 5px 0;
+  font-size: 20px;
+  color: #1f2937;
 }
 
-.card {
-  padding: 2em;
+.info-panel p {
+  margin: 0 0 15px 0;
+  font-size: 14px;
+  color: #6b7280;
 }
 
-.read-the-docs {
-  color: #888;
+.stats {
+  font-size: 13px;
+  color: #4b5563;
+  background: #f3f4f6;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.stats-breakdown {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #d1d5db;
+}
+
+.stats-breakdown div {
+  display: flex;
+  align-items: center;
+  margin: 4px 0;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.dot.safe { background: #10b981; }
+.dot.moderate { background: #f59e0b; }
+.dot.unsafe { background: #ef4444; }
+
+.legend {
+  position: absolute;
+  bottom: 30px;
+  right: 10px;
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  z-index: 1000;
+}
+
+.legend strong {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+  font-size: 13px;
+}
+
+.legend-color {
+  width: 40px;
+  height: 4px;
+  margin-right: 10px;
+  border-radius: 2px;
+}
+
+.legend-color.safe { background: #10b981; }
+.legend-color.moderate { background: #f59e0b; }
+.legend-color.unsafe { background: #ef4444; }
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255,255,255,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.loading-box {
+  background: white;
+  padding: 30px 50px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  font-size: 16px;
+  color: #4b5563;
 }
