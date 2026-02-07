@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Polyline, Popup, Marker } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import './App.css'
 
-// Fix Leaflet default marker icon issue
+// Fix Leaflet marker icons
 import L from 'leaflet'
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
