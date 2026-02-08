@@ -90,16 +90,22 @@ function App() {
       <div className="flex-1 flex relative overflow-hidden">
         <div className={`relative h-full transition-all duration-300 ${routeGenerated && !sidebarCollapsed ? 'w-[70%]' : 'w-full'}`}>
           
-          {/* SEARCH BAR - UPDATED TEXT & OPACITY */}
-          <div className="force-top absolute top-12 left-1/2 -translate-x-1/2 w-full max-w-2xl px-4 pointer-events-none">
-            <div className="relative pointer-events-auto">
+          {/* SEARCH BAR - NOW CLICKABLE AND TYPEABLE */}
+          <div className="force-top absolute top-12 left-1/2 -translate-x-1/2 w-full max-w-2xl px-4">
+            <div className="relative">
               <input
                 type="text"
                 placeholder="Search here..."
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && setRouteGenerated(true)}
-                className="w-full px-6 py-4 text-lg rounded-2xl border-[3px] shadow-2xl backdrop-blur-md transition-all deep-black-input"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    console.log('Searching for:', destination)
+                    // TODO: Implement actual routing logic here
+                    // For now, just log the search term
+                  }
+                }}
+                className="w-full px-6 py-4 text-lg rounded-2xl border-[3px] shadow-2xl backdrop-blur-md transition-all deep-black-input focus:outline-none focus:ring-2 focus:ring-pink-500"
                 style={{ 
                   color: nightMode ? '#ffffff' : '#000000', 
                   fontWeight: '700',
