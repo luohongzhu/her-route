@@ -9,6 +9,14 @@ const safetyNodeSchema = new mongoose.Schema({
   },
   lampCount: Number,
   lightingScore: Number,
+  userVoteSum: {
+    type: Number,
+    default: 0
+  },
+  userVoteCount: {
+    type: Number,
+    default: 0
+  },
   safetyScore: Number
 });
 

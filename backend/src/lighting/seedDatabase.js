@@ -1,6 +1,6 @@
 import mongoose, { mongo } from "mongoose";
 import dotenv from "dotenv";
-import SafetyNode from "../safetyNode.js";
+import SafetyNode from "../models/safetyNode.js";
 import { fetchStreetLights } from "./fetchLighting.js";
 import { generateSafetyNodes } from "./generateSafetyNodes.js";
 
