@@ -1,14 +1,12 @@
 import { Moon, Sun, Settings } from 'lucide-react';
+import logo from '../assets/fixedHerRoute.svg?url'
 
-/**
- * @param {{ nightMode: boolean, onToggleNightMode: () => void, onSettings: () => void }} props
- */
 export function Header({ nightMode, onToggleNightMode, onSettings }) {
   return (
-    <header className={`h-14 sm:h-16 ${nightMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b flex items-center justify-between px-4 sm:px-6 z-20`}>
+    <header className={`h-14 sm:h-16 ${nightMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b flex items-center justify-between px-8 sm:px-12 z-20`}>
       <div className="flex items-center gap-2 sm:gap-3">
-        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-pink-500 to-orange-500 rounded-lg flex items-center justify-center">
-          <span className="text-white font-bold text-lg sm:text-xl">H</span>
+        <div className="w-8 h-8 sm:w-10 sm:h-10">
+          <img src={logo} alt="HerRoute" className="w-full h-full object-contain" />
         </div>
         <div>
           <h1 className={`font-bold text-lg sm:text-xl ${nightMode ? 'text-white' : 'text-gray-900'}`}>HerRoute</h1>

@@ -7,12 +7,6 @@ import { Sidebar } from './components/Sidebar'
 
 // Fix Leaflet marker icons
 import L from 'leaflet'
-delete L.Icon.Default.prototype._getIconUrl
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-})
 
 function App() {
   // Map data state (from original App.jsx)
@@ -30,6 +24,15 @@ function App() {
   const [destination, setDestination] = useState('')
 
   const macPosition = [43.2609, -79.9192]
+
+  // Custom pink pin icon from public folder
+  const customPinIcon = L.icon({
+    iconUrl: '/custom-pin.svg',
+    iconSize: [40, 60],        // Adjust size as needed
+    iconAnchor: [20, 60],      // Bottom center of pin
+    popupAnchor: [0, -60],     // Popup opens above pin
+    className: 'custom-pin-marker'
+  })
 
   // Load road data (from original App.jsx)
   useEffect(() => {
@@ -79,12 +82,12 @@ function App() {
   }, [])
 
   const getSafetyColor = (score) => {
-    if (score >= 80) return '#10b981'  // Dark green
-    if (score >= 70) return '#22c55e'  // Green
-    if (score >= 60) return '#84cc16'  // Lime
-    if (score >= 50) return '#facc15'  // Yellow
-    if (score >= 40) return '#fb923c'  // Orange
-    return '#ef4444'                    // Red
+    if (score >= 80) return '#ec4899'  // Hot pink - very safe
+    if (score >= 70) return '#f472b6'  // Pink - safe
+    if (score >= 60) return '#f9a8d4'  // Light pink - mostly safe
+    if (score >= 50) return '#fbcfe8'  // Pale pink - moderate
+    if (score >= 40) return '#d1d5db'  // Light grey - caution
+    return '#9ca3af'                    // Medium grey - unsafe
   }
 
   const getWeight = (type) => {
@@ -147,7 +150,7 @@ function App() {
                     ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-400'
                     : 'bg-white border-gray-200 text-gray-900 placeholder-gray-500'
                   }
-                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+                  focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent
                 `}
               />
               {routeGenerated && (
@@ -169,15 +172,17 @@ function App() {
             className={nightMode ? 'grayscale' : ''}
           >
             <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; OpenStreetMap contributors'
+              url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
+              attribution='&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>'
             />
 
-            {/* User location marker */}
-            <Marker position={macPosition}>
+            {/* User location marker with YOUR custom pin! 💗 */}
+            <Marker position={macPosition} icon={customPinIcon}>
               <Popup>
-                <strong>📍 Your Location</strong><br />
-                <small>McMaster University</small>
+                <div className="text-center">
+                  <strong className="text-pink-500">📍 Your Location</strong><br />
+                  <small className="text-gray-600">McMaster University</small>
+                </div>
               </Popup>
             </Marker>
 
@@ -206,7 +211,7 @@ function App() {
                     </div>
                     <button
                       onClick={() => handleRoadClick(road, idx)}
-                      className="mt-2 px-3 py-1 bg-indigo-500 text-white text-xs rounded hover:bg-indigo-600"
+                      className="mt-2 px-3 py-1 bg-pink-500 text-white text-xs rounded hover:bg-pink-600"
                     >
                       View Details
                     </button>
@@ -224,15 +229,15 @@ function App() {
               <strong className="block mb-3 text-sm">Safety Level</strong>
               <div className="space-y-2">
                 <div className="flex items-center gap-3 text-sm">
-                  <div className="w-10 h-1 rounded" style={{ backgroundColor: '#10b981' }}></div>
+                  <div className="w-10 h-1 rounded" style={{ backgroundColor: '#ec4899' }}></div>
                   <span>Safe (70-100)</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
-                  <div className="w-10 h-1 rounded" style={{ backgroundColor: '#facc15' }}></div>
+                  <div className="w-10 h-1 rounded" style={{ backgroundColor: '#fbcfe8' }}></div>
                   <span>Moderate (40-69)</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
-                  <div className="w-10 h-1 rounded" style={{ backgroundColor: '#ef4444' }}></div>
+                  <div className="w-10 h-1 rounded" style={{ backgroundColor: '#9ca3af' }}></div>
                   <span>Unsafe (0-39)</span>
                 </div>
               </div>
@@ -244,7 +249,7 @@ function App() {
             <div className={`absolute top-20 right-4 z-[1000] rounded-xl shadow-lg p-5 max-w-xs
               ${nightMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}
             `}>
-              <h2 className="text-xl font-bold mb-1">AfterHours AI</h2>
+              <h2 className="text-xl font-bold mb-1">HerRoute</h2>
               <p className={`text-sm mb-4 ${nightMode ? 'text-gray-400' : 'text-gray-600'}`}>
                 McMaster Safety Map
               </p>
@@ -254,15 +259,15 @@ function App() {
                 </div>
                 <div className="mt-3 pt-3 border-t border-gray-600 space-y-2">
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="w-3 h-3 rounded-full bg-green-500"></span>
+                    <span className="w-3 h-3 rounded-full" style={{ backgroundColor: '#ec4899' }}></span>
                     <span>{stats.safe} safe routes</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
+                    <span className="w-3 h-3 rounded-full" style={{ backgroundColor: '#fbcfe8' }}></span>
                     <span>{stats.moderate} caution areas</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="w-3 h-3 rounded-full bg-red-500"></span>
+                    <span className="w-3 h-3 rounded-full" style={{ backgroundColor: '#9ca3af' }}></span>
                     <span>{stats.unsafe} avoid at night</span>
                   </div>
                 </div>
@@ -274,7 +279,7 @@ function App() {
           {loading && (
             <div className="absolute inset-0 bg-white/90 flex items-center justify-center z-[2000]">
               <div className="bg-white rounded-xl shadow-2xl p-8 text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto mb-4"></div>
                 <p className="text-gray-600 text-lg">Loading map data...</p>
               </div>
             </div>
