@@ -39,7 +39,7 @@ export function RouteOverview({ nightMode }: RouteOverviewProps) {
 
   return (
     <>
-      <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 relative">
+      <div className={`px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 relative ${nightMode ? 'bg-gray-800' : 'bg-white'}`}>
         {/* Route Title */}
         <div>
           <h2 className={`text-xs sm:text-sm font-semibold ${nightMode ? 'text-gray-400' : 'text-gray-500'} uppercase tracking-wide mb-2`}>
