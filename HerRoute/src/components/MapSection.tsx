@@ -21,6 +21,7 @@ export function MapSection({
 }: MapSectionProps) {
   const [searchValue, setSearchValue] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedDestination, setSelectedDestination] = useState<string>("Ron Joyce Stadium");
 
   const suggestions = [
     { icon: '🏛️', name: 'Wilson Hall', distance: '0 km' },
@@ -28,6 +29,13 @@ export function MapSection({
     { icon: '📚', name: 'Mills Library', distance: '0.3 km' },
     { icon: '☕', name: 'Tim Hortons - Campus', distance: '0.2 km' },
   ];
+
+  const handleDestinationClick = (destinationName: string) => {
+    setSearchValue(destinationName);
+    setSelectedDestination(destinationName);
+    onDestinationSelect();
+    setShowSuggestions(false);
+  };
 
   return (
     <div
@@ -97,11 +105,7 @@ export function MapSection({
               {suggestions.map((suggestion, idx) => (
                 <button
                   key={idx}
-                  onClick={() => {
-                    setSearchValue(suggestion.name);
-                    onDestinationSelect();
-                    setShowSuggestions(false);
-                  }}
+                  onClick={() => handleDestinationClick(suggestion.name)}
                   className={`w-full text-left px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2 sm:gap-3 transition-colors ${nightMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
                     } ${idx === suggestions.length - 1 ? '' : `border-b ${nightMode ? 'border-gray-700' : 'border-gray-100'}`}`}
                 >
@@ -129,6 +133,7 @@ export function MapSection({
         <HerRouteMap
           nightMode={nightMode}
           routeGenerated={routeGenerated}
+          selectedDestination={selectedDestination}
           onSegmentClick={(segmentId) => {
             onNodeClick(segmentId);
           }}
