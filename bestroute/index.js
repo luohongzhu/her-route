@@ -35,6 +35,7 @@ exports.getRoutes = onRequest(async (req, res) => {
         .status(500)
         .json({ ok: false, error: "Missing GOOGLE_MAPS_KEY" });
 
+    console.log(req.body);
     // Pulls request (user tells to go from HERE to THERE)
     const { origin, destination } = req.body || {};
 

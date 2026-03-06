@@ -16,7 +16,24 @@ export default function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const resetMapViewRef = useRef<(() => void) | null>(null);
 
-  const handleDestinationSelect = () => {
+  const handleDestinationSelect = async (destination: string) => {
+    const response = await fetch(
+    "http://127.0.0.1:5001/her-route/us-central1/getRoutes",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        origin: { lat: 43.2609, lng: -79.9192 },
+        destination: { lat: 43.2629, lng: -79.9215 },
+      }),
+    }
+  );
+
+    const data = await response.json();
+    console.log("Best route:", data);
+
     setRouteGenerated(true);
     setSidebarView('overview');
     setSidebarCollapsed(false);

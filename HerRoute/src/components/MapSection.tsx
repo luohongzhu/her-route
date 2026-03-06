@@ -5,7 +5,7 @@ import HerRouteMap from "./HerRouteMap";
 interface MapSectionProps {
   nightMode: boolean;
   routeGenerated: boolean;
-  onDestinationSelect: () => void;
+  onDestinationSelect: (destination: string) => void;
   onClearRoute: () => void;
   onNodeClick: (nodeId: number) => void;
   onResetView: (resetFn: () => void) => void;
@@ -34,7 +34,7 @@ export function MapSection({
   const handleDestinationClick = (destinationName: string) => {
     setSearchValue(destinationName);
     setSelectedDestination(destinationName);
-    onDestinationSelect();
+    onDestinationSelect(destinationName);
     setShowSuggestions(false);
   };
 
@@ -64,7 +64,7 @@ export function MapSection({
               onFocus={() => setShowSuggestions(true)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && searchValue.trim()) {
-                  handleDestinationClick("87 Dalewood Crescent");
+                  handleDestinationClick(searchValue);
                 }
               }}
               placeholder="Enter destination..."
