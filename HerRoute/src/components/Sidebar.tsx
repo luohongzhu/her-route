@@ -8,46 +8,83 @@ interface SidebarProps {
   view: 'overview' | 'segment';
   selectedSegment: number | null;
   collapsed: boolean;
+  route: {
+        coords: { lat: number; lng: number }[];
+        polyline?: string;
+        distance_m?: number;
+        duration_s?: number;
+        safetyScore?: number;
+    } | null;
+  origin: string;
+  destination: string;
   onToggleCollapse: () => void;
   onBackToOverview: () => void;
+  onExit: () => void;
 }
 
-export function Sidebar({ nightMode, view, selectedSegment, collapsed, onToggleCollapse, onBackToOverview }: SidebarProps) {
+export function Sidebar(
+  { nightMode,
+    view,
+    selectedSegment,
+    collapsed,
+    onToggleCollapse,
+    onBackToOverview,
+    onExit,
+    route,
+    origin,
+    destination,
+  }: SidebarProps) {
   return (
     <>
-      {/* Toggle Button - Desktop (right side) */}
-      <div className="hidden md:block absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 z-30">
-        <button
-          onClick={onToggleCollapse}
-          className={`w-9 h-9 sm:w-10 sm:h-10 ${nightMode ? 'bg-gray-800 border-gray-700 hover:bg-gray-700' : 'bg-white border-gray-300 hover:bg-gray-50'} border-2 rounded-full flex items-center justify-center transition-all shadow-lg`}
-        >
-          {collapsed ? (
-            <ChevronLeft className={`w-4 h-4 sm:w-5 sm:h-5 ${nightMode ? 'text-gray-300' : 'text-gray-600'}`} />
-          ) : (
-            <ChevronRight className={`w-4 h-4 sm:w-5 sm:h-5 ${nightMode ? 'text-gray-300' : 'text-gray-600'}`} />
-          )}
-        </button>
-      </div>
+      {/* Slide-back button - Desktop (right edge, only when collapsed) */}
+      <AnimatePresence>
+        {collapsed && (
+          <motion.div
+            className="hidden md:block absolute right-4 top-1/2 -translate-y-1/2 z-30"
+            initial={{ scale: 0.7, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.7, opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+          >
+            <button
+              onClick={onToggleCollapse}
+              className={`w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-colors ${
+                nightMode
+                  ? 'bg-gray-800 hover:bg-gray-700 text-pink-400 border border-gray-700'
+                  : 'bg-white hover:bg-pink-50 text-pink-500 border border-pink-200'
+              }`}
+              aria-label="Open route details"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Toggle Button - Mobile (bottom center) */}
-      <div className="md:hidden absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30">
-        <button
-          onClick={onToggleCollapse}
-          className={`px-4 py-2 ${nightMode ? 'bg-gray-800 border-gray-700 hover:bg-gray-700' : 'bg-white border-gray-300 hover:bg-gray-50'} border-2 rounded-full flex items-center gap-2 transition-all shadow-lg`}
-        >
-          {collapsed ? (
-            <>
-              <ChevronUp className={`w-5 h-5 ${nightMode ? 'text-gray-300' : 'text-gray-600'}`} />
-              <span className={`text-sm font-medium ${nightMode ? 'text-gray-300' : 'text-gray-700'}`}>Route Details</span>
-            </>
-          ) : (
-            <>
-              <ChevronDown className={`w-5 h-5 ${nightMode ? 'text-gray-300' : 'text-gray-600'}`} />
-              <span className={`text-sm font-medium ${nightMode ? 'text-gray-300' : 'text-gray-700'}`}>Hide</span>
-            </>
-          )}
-        </button>
-      </div>
+      {/* Slide-back button - Mobile (bottom center, only when collapsed) */}
+      <AnimatePresence>
+        {collapsed && (
+          <motion.div
+            className="md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-30"
+            initial={{ y: 40, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 40, opacity: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+          >
+            <button
+              onClick={onToggleCollapse}
+              className={`px-4 py-2.5 border-2 rounded-full flex items-center gap-2 shadow-lg transition-colors ${
+                nightMode
+                  ? 'bg-gray-800 border-pink-700 hover:bg-gray-700 text-pink-400'
+                  : 'bg-white border-pink-300 hover:bg-pink-50 text-pink-500'
+              }`}
+            >
+              <ChevronUp className="w-4 h-4" />
+              <span className="text-sm font-semibold">Route Details</span>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Sidebar Panel - Desktop (right side) */}
       <motion.div 
@@ -68,7 +105,13 @@ export function Sidebar({ nightMode, view, selectedSegment, collapsed, onToggleC
               transition={{ duration: 0.2 }}
             >
               {view === 'overview' ? (
-                <RouteOverview nightMode={nightMode} />
+                <RouteOverview
+                  nightMode={nightMode}
+                  route={route}
+                  origin={origin}
+                  destination={destination}
+                  onExit={onExit}
+                />
               ) : (
                 <div>
                   <div className={`sticky top-0 ${nightMode ? 'bg-gray-900/95 border-gray-700' : 'bg-pink-50/95 border-pink-100'} backdrop-blur-sm border-b px-4 sm:px-6 py-3 sm:py-4 z-10`}>
@@ -112,7 +155,13 @@ export function Sidebar({ nightMode, view, selectedSegment, collapsed, onToggleC
               </div>
               
               {view === 'overview' ? (
-                <RouteOverview nightMode={nightMode} />
+                <RouteOverview
+                  nightMode={nightMode}
+                  route={route}
+                  origin={origin}
+                  destination={destination}
+                  onExit={onExit}
+                />
               ) : (
                 <div>
                   <div className={`sticky top-0 ${nightMode ? 'bg-gray-900/95 border-gray-700' : 'bg-pink-50/95 border-pink-100'} backdrop-blur-sm border-b px-4 py-3 z-10`}>

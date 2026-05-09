@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Polyline, Marker, Popup, useMap } from 'react-leaflet';
 import type { Map as LeafletMap } from 'leaflet';
 import L from 'leaflet';
@@ -62,26 +62,39 @@ const createPinkDot = () => {
     });
 };
 
-// Custom SVG Pin for Current Location
-const createCustomPin = () => {
-    return L.icon({
-        iconUrl: '/custom-pin.svg',
-        iconSize: [40, 60],
-        iconAnchor: [20, 60],
-        popupAnchor: [0, -60],
-        className: 'custom-pin-marker'
-    });
-};
+const createStartMarker = () => L.divIcon({
+    className: '',
+    html: `<div style="width:22px;height:22px;background:#22c55e;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;">
+             <div style="width:7px;height:7px;background:white;border-radius:50%;"></div>
+           </div>`,
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+});
 
-function MapViewHandler({ routeGenerated }: { routeGenerated: boolean }) {
+const createDestinationMarker = () => L.divIcon({
+    className: '',
+    html: `<div style="width:28px;height:38px;position:relative;">
+             <svg viewBox="0 0 28 38" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.35));">
+               <path d="M14 0C6.268 0 0 6.268 0 14c0 10.5 14 24 14 24S28 24.5 28 14C28 6.268 21.732 0 14 0z" fill="#ec4899"/>
+               <circle cx="14" cy="14" r="6" fill="white"/>
+               <circle cx="14" cy="14" r="3.5" fill="#ec4899"/>
+             </svg>
+           </div>`,
+    iconSize: [28, 38],
+    iconAnchor: [14, 38],
+});
+
+
+function MapViewHandler({ routeGenerated, routeCoords }: { routeGenerated: boolean; routeCoords: [number, number][] }) {
     const map = useMap();
     useEffect(() => {
-        if (routeGenerated) {
-            map.flyTo(BRUCE_TRAIL_DESTINATION, 16, { duration: 1.5 });
-        } else {
+        if (routeGenerated && routeCoords.length > 0) {
+            const bounds = L.latLngBounds(routeCoords);
+            map.flyToBounds(bounds, { padding: [60, 60], duration: 1.5, maxZoom: 17 });
+        } else if (!routeGenerated) {
             map.setView(MCMASTER_CENTER, 15);
         }
-    }, [routeGenerated, map]);
+    }, [routeGenerated, routeCoords, map]);
     return null;
 }
 
@@ -92,20 +105,6 @@ export default function HerRouteMap({
     route,
 }: HerRouteMapProps) {
     const mapRef = useRef<LeafletMap | null>(null);
-    const [allRoads, setAllRoads] = useState<any[]>([]);
-    console.log("in herroutemap:", route)
-    useEffect(() => {
-        fetch('/roads_simplified.json')
-            .then(res => res.json())
-            .then(data => {
-                const roadsWithScores = data.map((road: any) => ({
-                    ...road,
-                    safetyScore: Math.floor(40 + Math.random() * 55),
-                }));
-                setAllRoads(roadsWithScores);
-            })
-            .catch(() => console.warn("Road data not found."));
-    }, []);
 
     return (
         <div style={{ height: '100%', width: '100%', position: 'relative' }}>
@@ -125,10 +124,6 @@ export default function HerRouteMap({
                     transition: filter 0.4s ease;
                 }
                 .custom-pink-marker { z-index: 1000 !important; }
-                .custom-pin-marker { 
-                    z-index: 1001 !important; 
-                    filter: none !important;
-                }
                 /* Ensure markers are NOT affected by tile filters */
                 .leaflet-marker-pane,
                 .leaflet-popup-pane {
@@ -144,20 +139,11 @@ export default function HerRouteMap({
                 zoomControl={false}
             >
                 <TileLayer url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png" />
-                <MapViewHandler routeGenerated={routeGenerated} />
+                <MapViewHandler
+                    routeGenerated={routeGenerated}
+                    routeCoords={route ? route.coords.map(c => [c.lat, c.lng] as [number, number]) : []}
+                />
 
-                {/* Safety Heatmap Roads - Always Visible */}
-                {allRoads.map((road, idx) => (
-                    <Polyline
-                        key={`road-${idx}`}
-                        positions={road.coordinates}
-                        pathOptions={{
-                            color: getSafetyColor(road.safetyScore),
-                            weight: 3,
-                            opacity: 0.3,
-                        }}
-                    />
-                ))}
 
                 {route && (
                     <>
@@ -177,26 +163,21 @@ export default function HerRouteMap({
                                 lineCap: 'round',
                             }}
                         />
+
+                        {/* Origin marker */}
+                        <Marker
+                            position={[route.coords[0].lat, route.coords[0].lng]}
+                            icon={createStartMarker()}
+                        />
+
+                        {/* Destination marker */}
+                        <Marker
+                            position={[route.coords[route.coords.length - 1].lat, route.coords[route.coords.length - 1].lng]}
+                            icon={createDestinationMarker()}
+                        />
                     </>
                 )}
 
-                <Polyline
-                    positions={[
-                        [43.2609, -79.9192],
-                        [43.2623, -79.9170],
-                    ]}
-                    pathOptions={{ color: 'red', weight: 6, opacity: 1 }}
-                />
-
-                {/* Current location marker - Custom Pin - Always Visible */}
-                <Marker position={MCMASTER_CENTER} icon={createCustomPin()}>
-                    <Popup>
-                        <div className="text-center">
-                            <strong className="text-pink-500">📍 Your Location</strong><br />
-                            <small className="text-gray-600">McMaster University</small>
-                        </div>
-                    </Popup>
-                </Marker>
             </MapContainer>
         </div>
     );
